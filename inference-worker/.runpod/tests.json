@@ -1,19 +1,106 @@
 {
+  "version": "1.0.0",
   "tests": [
     {
-      "name": "healthcheck",
+      "name": "health_check",
+      "description": "Verify the service is running",
+      "endpoint": "/health",
+      "method": "GET",
+      "expected": {
+        "status": 200,
+        "body": {
+          "status": "healthy"
+        }
+      }
+    },
+    {
+      "name": "model_load",
+      "description": "Test loading an RVC model",
+      "endpoint": "/runsync",
+      "method": "POST",
       "input": {
-        "healthcheck": true
+        "input": {
+          "action": "load_model",
+          "model_name": "test_model"
+        }
       },
-      "timeout": 10000
+      "expected": {
+        "status": 200,
+        "body": {
+          "output": {
+            "status": "success",
+            "model_loaded": true
+          }
+        }
+      },
+      "timeout": 30
+    },
+    {
+      "name": "voice_conversion",
+      "description": "Test basic voice conversion",
+      "endpoint": "/runsync",
+      "method": "POST",
+      "input": {
+        "input": {
+          "action": "convert",
+          "audio_url": "https://example.com/sample.wav",
+          "model_name": "default",
+          "pitch_shift": 0,
+          "feature_ratio": 0.75,
+          "filter_radius": 3,
+          "rms_mix_rate": 0.25
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "output": {
+            "status": "success",
+            "audio_url": "string"
+          }
+        }
+      },
+      "timeout": 60
+    },
+    {
+      "name": "batch_processing",
+      "description": "Test batch audio processing",
+      "endpoint": "/run",
+      "method": "POST",
+      "input": {
+        "input": {
+          "action": "batch_convert",
+          "audio_urls": [
+            "https://example.com/audio1.wav",
+            "https://example.com/audio2.wav"
+          ],
+          "model_name": "default"
+        }
+      },
+      "expected": {
+        "status": 200,
+        "body": {
+          "id": "string",
+          "status": "IN_QUEUE"
+        }
+      }
+    },
+    {
+      "name": "invalid_input",
+      "description": "Test error handling for invalid input",
+      "endpoint": "/runsync",
+      "method": "POST",
+      "input": {
+        "input": {
+          "action": "convert"
+        }
+      },
+      "expected": {
+        "status": 400,
+        "body": {
+          "error": "Missing required parameter: audio_url"
+        }
+      }
     }
-  ],
-  "config": {
-    "gpuTypeId": "NVIDIA GeForce RTX 4090",
-    "gpuCount": 1,
-    "allowedCudaVersions": [
-      "12.7", "12.6", "12.5", "12.4",
-      "12.3", "12.2", "12.1", "12.0"
-    ]
-  }
+  ]
 }

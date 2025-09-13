@@ -1,0 +1,10 @@
+jupyterlab
+librosa
+faiss-gpu
+tensorboard
+wandb
+
+runpod
+
+fastapi
+uvicorn

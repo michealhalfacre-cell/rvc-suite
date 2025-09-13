@@ -1,42 +1,60 @@
 {
-  "title": "RVC Fast Inference",
-  "description": "Serverless API for fast Retrieval-based Voice Conversion (RVC). Send audio + model name, get converted audio back.",
-  "type": "serverless",
-  "category": "audio",
-  "config": {
-    "runsOn": "GPU",
-    "containerDiskInGb": 20,
-    "gpuCount": 1,
-    "gpuIds": "NVIDIA RTX 4090,L40S",
-    "env": [
-      {
-        "key": "MODELS_DIR",
-        "value": "/models"
-      },
-      {
-        "key": "OUTPUT_FORMAT",
-        "input": {
-          "name": "Output format",
-          "type": "string",
-          "description": "Choose audio format",
-          "options": [
-            { "label": "WAV", "value": "wav" },
-            { "label": "MP3", "value": "mp3" }
-          ],
-          "default": "wav"
-        }
-      },
-      {
-        "key": "RETURN_BASE64",
-        "input": {
-          "type": "boolean",
-          "name": "Return base64",
-          "description": "Return audio as base64 string",
-          "default": true,
-          "trueValue": "true",
-          "falseValue": "false"
-        }
-      }
-    ]
+  "version": "1.0.0",
+  "name": "RVC-Suite",
+  "description": "Real-time Voice Conversion Suite for AI voice cloning and transformation",
+  "runtime": {
+    "python": "3.10",
+    "handler": "handler.py"
+  },
+  "compute": {
+    "gpu": true,
+    "gpuType": ["NVIDIA"],
+    "minimumVRAM": 6000
+  },
+  "env": [
+    {
+      "key": "MODEL_PATH",
+      "value": "/workspace/models",
+      "description": "Path to RVC models directory"
+    },
+    {
+      "key": "CACHE_DIR",
+      "value": "/workspace/cache",
+      "description": "Directory for caching processed audio"
+    },
+    {
+      "key": "MAX_AUDIO_LENGTH",
+      "value": "600",
+      "description": "Maximum audio length in seconds"
+    },
+    {
+      "key": "SAMPLE_RATE",
+      "value": "48000",
+      "description": "Audio sample rate for processing"
+    },
+    {
+      "key": "PYTORCH_CUDA_ALLOC_CONF",
+      "value": "max_split_size_mb:512",
+      "description": "CUDA memory allocation configuration"
+    }
+  ],
+  "volumes": [
+    {
+      "path": "/workspace/models",
+      "size": "20Gi",
+      "description": "Persistent storage for RVC models"
+    }
+  ],
+  "ports": [
+    {
+      "port": 8000,
+      "type": "http",
+      "description": "API endpoint"
+    }
+  ],
+  "healthcheck": {
+    "path": "/health",
+    "interval": 30,
+    "timeout": 10
   }
 }
