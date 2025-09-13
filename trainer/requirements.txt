@@ -1,0 +1,6 @@
+jupyterlab
+librosa
+fairseq
+faiss-gpu
+tensorboard
+wandb
