@@ -1,0 +1,57 @@
+{
+  "title": "RVC Fast Inference (Voice Conversion)",
+  "description": "Serverless RVC voice conversion on RunPod: send audio + model name, get cloned voice back. Healthcheck and base64 output included.",
+  "type": "serverless",
+  "category": "audio",
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 20,
+    "gpuCount": 1,
+    "env": [
+      {
+        "key": "MODELS_DIR",
+        "input": {
+          "name": "Models directory",
+          "type": "string",
+          "description": "Path where trained RVC models live inside the container/volume",
+          "default": "/models",
+          "advanced": false
+        }
+      },
+      {
+        "key": "OUTPUT_FORMAT",
+        "input": {
+          "name": "Output format",
+          "type": "string",
+          "description": "Audio output format",
+          "options": [
+            {"label": "WAV", "value": "wav"},
+            {"label": "MP3", "value": "mp3"}
+          ],
+          "default": "wav"
+        }
+      },
+      {
+        "key": "RETURN_BASE64",
+        "input": {
+          "type": "boolean",
+          "name": "Return audio as base64",
+          "description": "If true, response includes base64 instead of URL",
+          "default": true,
+          "trueValue": "true",
+          "falseValue": "false"
+        }
+      }
+    ],
+    "presets": [
+      {
+        "name": "Default",
+        "defaults": {
+          "MODELS_DIR": "/models",
+          "OUTPUT_FORMAT": "wav",
+          "RETURN_BASE64": true
+        }
+      }
+    ]
+  }
+}
